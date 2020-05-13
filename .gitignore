@@ -10,4 +10,7 @@ test/*
 dependencies/
 releases/
 
+cmake-build-debug/
+.idea/
+
 !test/samp.json

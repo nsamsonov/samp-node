@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # -
 # Plugin
@@ -38,10 +38,14 @@ if(UNIX)
 	set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 
 	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.so;.so.64")
-	add_link_options(
+#	add_link_options(
+#		"-static-libgcc"
+#		"-static-libstdc++"
+#	)
+	link_libraries(
 		"-static-libgcc"
 		"-static-libstdc++"
-	)		
+	)
 
 	set(CPACK_SYSTEM_NAME "linux")
 endif()
