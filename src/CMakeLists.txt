@@ -1,6 +1,9 @@
 include(AMXConfig)
 include(AddSAMPPlugin)
 
+set( CMAKE_VERBOSE_MAKEFILE on )
+set(JULIA_DIR "${PROJECT_SOURCE_DIR}/bin/julia-1.4.1")
+
 # -
 # Node
 # -
@@ -45,6 +48,7 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/deps/uv
 	${PROJECT_SOURCE_DIR}/deps/json/single_include/nlohmann
 	${PROJECT_SOURCE_DIR}/deps/tinydir
+	${JULIA_DIR}/include/julia
 )
 
 # -
@@ -66,12 +70,16 @@ add_samp_plugin(${PROJECT_NAME}
 	plugin.def
 )
 
+target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/bin/julia-1.4.1/lib)
+target_link_libraries(${PROJECT_NAME} julia)
+
 if (WIN32)
     set(LIBRARIES v8_libbase v8_libplatform node shlwapi dbghelp winmm yaml-cpp)	
 else()
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		INSTALL_RPATH "$ORIGIN/..:$ORIGIN/")
-	target_link_libraries(${PROJECT_NAME} ${NODE_PATH}/libnode.so.64)	
+	target_link_libraries(${PROJECT_NAME} ${NODE_PATH}/libnode.so.64)
+	target_link_libraries(${PROJECT_NAME} ${JULIA_DIR}/lib/julia/libstdc++.so.6)
 
 	set(LIBRARIES ${node} pthread dl m yaml-cpp)		
 
@@ -86,6 +94,7 @@ add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
 )
 
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} -static-libgcc -static-libstdc++)
 
 # -
 # C(++) Version
@@ -104,6 +113,7 @@ set(CPACK_PACKAGE_DIRECTORY ${PROJECT_SOURCE_DIR}/build/cpack)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "./")
 set(CPACK_PACKAGE_VERSION ${PLUGIN_VERSION})
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 install(FILES ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}.inc DESTINATION ".")
 install(FILES ${NODE_PATH}/${NODE_FILE} DESTINATION ".")
@@ -116,3 +126,10 @@ else()
 endif()
 
 include(CPack)
+
+message(STATUS "print_all_variables------------------------------------------{")
+get_cmake_property(_variableNames VARIABLES)
+foreach (_variableName ${_variableNames})
+	message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+message(STATUS "print_all_variables------------------------------------------}")

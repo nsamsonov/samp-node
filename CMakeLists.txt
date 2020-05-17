@@ -33,19 +33,24 @@ endif()
 # -
 
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -std=c++14")
+	message("UNIX")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -march=pentium4 -Wl,--export-dynamic")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-	set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+#	set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+#	set_property(GLOBAL PROPERTY CXX_STANDARD 14)
+	set(CMAKE_CXX_STANDARD 14)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
+	set(CMAKE_CXX_EXTENSIONS OFF)
 
 	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.so;.so.64")
 #	add_link_options(
 #		"-static-libgcc"
 #		"-static-libstdc++"
 #	)
-	link_libraries(
-		"-static-libgcc"
-		"-static-libstdc++"
-	)
+#	link_libraries(
+#		"-static-libgcc"
+#		"-static-libstdc++"
+#	)
 
 	set(CPACK_SYSTEM_NAME "linux")
 endif()
