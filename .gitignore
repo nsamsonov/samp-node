@@ -14,3 +14,5 @@ cmake-build-debug/
 .idea/
 
 !test/samp.json
+
+bin/julia-1.4.1
