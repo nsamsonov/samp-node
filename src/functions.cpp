@@ -6,22 +6,23 @@
 #include "events.hpp"
 #include "natives.hpp"
 #include "callbacks.hpp"
+#include <iostream>
 
 
 static std::pair<std::string, v8::FunctionCallback> sampnodeSpecificFunctions[] =
 {
-	{ "on", sampnode::event::on },
-	{ "addEventListener", sampnode::event::on },
-	{ "addListener", sampnode::event::on },
-	{ "removeListener", sampnode::event::remove_listener },
-	{ "removeEventListener", sampnode::event::remove_listener },
-	{ "fire", sampnode::event::fire },
-	{ "registerEvent", sampnode::event::register_event },
-	{ "callNative", sampnode::native::call },
-	{ "callNativeFloat", sampnode::native::call_float },
-	{ "callPublic", sampnode::callback::call },
-	{ "callPublicFloat", sampnode::callback::call_float },
-	{ "logprint", sampnode::functions::logprint }
+//	{ "on", sampnode::event::on },
+//	{ "addEventListener", sampnode::event::on },
+//	{ "addListener", sampnode::event::on },
+//	{ "removeListener", sampnode::event::remove_listener },
+//	{ "removeEventListener", sampnode::event::remove_listener },
+//	{ "fire", sampnode::event::fire },
+//	{ "registerEvent", sampnode::event::register_event },
+//	{ "callNative", sampnode::native::call },
+//	{ "callNativeFloat", sampnode::native::call_float },
+//	{ "callPublic", sampnode::callback::call },
+//	{ "callPublicFloat", sampnode::callback::call_float },
+//	{ "logprint", sampnode::functions::logprint }
 };
 
 namespace sampnode
@@ -40,6 +41,7 @@ namespace sampnode
 
 	void functions::logprint(const v8::FunctionCallbackInfo<v8::Value>& info)
 	{
+	    std::cout << "GOT A LOG" << std::endl;
 		if (info.Length() > 0)
 		{
 			v8::HandleScope scope(info.GetIsolate());

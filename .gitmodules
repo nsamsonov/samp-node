@@ -13,7 +13,3 @@
 [submodule "deps/json"]
 	path = deps/json
 	url = https://github.com/nlohmann/json
-[submodule "deps/julia"]
-	path = deps/julia
-	url = https://github.com/JuliaLang/julia
-	branch = release-1.3

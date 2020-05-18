@@ -8,8 +8,7 @@
 #include <sampgdk.h>
 #include "common.hpp"
 #include "config.hpp"
-#include "julia.h"
-#include <dlfcn.h>
+#include "julia-wrapper.hpp"
 
 logprintf_t logprintf;
 
@@ -21,20 +20,22 @@ const AMX_NATIVE_INFO native_list[] =
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX* amx, const char* name, cell* params, cell* retval)
 {
-	if (sampnode::js_calling_public)
-		return true;
+    std::cout << "ON PUB CALL " << name << std::endl;
+    return juls::JuliaWrapper::HandlePublicCall(amx, std::string(name), params, retval);
+//	if (sampnode::js_calling_public)
+//		return true;
 
-	auto iter = sampnode::events.find(name);
-	if (iter != sampnode::events.end())
-		iter->second->call(amx, params, retval);
+//	auto iter = sampnode::events.find(name);
+//	if (iter != sampnode::events.end())
+//		iter->second->call(amx, params, retval);
 
-	return true;
 }
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
 {
 	sampgdk::ProcessTick();
-	sampnode::nodeImpl.Tick();
+//	sampnode::nodeImpl.Tick();
+//	uv_run(jl_global_event_loop(), UV_RUN_NOWAIT);
 	return;
 }
 
@@ -45,11 +46,6 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData)
 {
-    dlopen("libjulia.so", RTLD_NOW | RTLD_GLOBAL);
-    std::cout << "TESST2" << std::endl;
-    jl_init();
-    jl_eval_string("println(\"Hello from Julia!\")");
-
 	logprintf = (logprintf_t)(ppData[PLUGIN_DATA_LOGPRINTF]);
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
 
@@ -67,10 +63,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData)
 
 	Log::Init(mainConfigData.log_level);
 
+	std::cout << "Pre-init" << std::endl;
 	sampgdk::Load(ppData);
-	sampnode::callback::init();
-	sampnode::nodeImpl.Initialize(mainConfigData);
-	sampnode::NodeImpl::LoadAllResources(mainConfigData.resources, mainConfigData.enable_resources);
+	juls::JuliaWrapper::Init();
+//	sampnode::callback::init();
+//	sampnode::nodeImpl.Initialize(mainConfigData);
+
+    std::cout << "Pre-load-resource" << std::endl;
+	juls::JuliaWrapper::LoadResource(juls::JulsResource{ "res/testgm.jl" });
+//	sampnode::NodeImpl::LoadAllResources(mainConfigData.resources, mainConfigData.enable_resources);
 
 	return true;
 }
@@ -84,8 +85,8 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX* amx)
 PLUGIN_EXPORT void PLUGIN_CALL Unload()
 {
 	sampgdk::Unload();
-	sampnode::nodeImpl.Stop();
-	jl_atexit_hook(0);
+//	sampnode::nodeImpl.Stop();
+	juls::JuliaWrapper::Dispose();
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx)

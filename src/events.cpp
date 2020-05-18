@@ -9,6 +9,7 @@
 #include "events.hpp"
 #include "utils.hpp"
 #include "logger.hpp"
+#include <iostream>
 
 namespace sampnode
 {
@@ -48,6 +49,7 @@ namespace sampnode
 
 	void event::on(const v8::FunctionCallbackInfo<v8::Value>& info)
 	{
+        std::cout << "GOT A ON" << std::endl;
 		if (info.Length() > 0)
 		{
 			v8::HandleScope scope(info.GetIsolate());
