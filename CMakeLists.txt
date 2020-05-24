@@ -5,10 +5,10 @@ cmake_minimum_required(VERSION 3.10)
 # -
 
 if (NOT PLUGIN_VERSION)
-	set(PLUGIN_VERSION "0.2.0")
+	set(PLUGIN_VERSION "0.0.1")
 endif()
 
-project(samp-node VERSION ${PLUGIN_VERSION})
+project(jules-andreas VERSION ${PLUGIN_VERSION})
 
 # -
 # Paths
@@ -35,7 +35,7 @@ endif()
 if(UNIX)
 	message("UNIX")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -march=pentium4 -Wl,--export-dynamic")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -Wl,--export-dynamic")
 #	set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 #	set_property(GLOBAL PROPERTY CXX_STANDARD 14)
 	set(CMAKE_CXX_STANDARD 14)

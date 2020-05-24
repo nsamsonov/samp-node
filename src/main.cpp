@@ -21,7 +21,7 @@ const AMX_NATIVE_INFO native_list[] =
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX* amx, const char* name, cell* params, cell* retval)
 {
     std::cout << "ON PUB CALL " << name << std::endl;
-    return juls::JuliaWrapper::HandlePublicCall(amx, std::string(name), params, retval);
+    return jules::JuliaWrapper::HandlePublicCall(amx, std::string(name), params, retval);
 //	if (sampnode::js_calling_public)
 //		return true;
 
@@ -65,12 +65,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData)
 
 	std::cout << "Pre-init" << std::endl;
 	sampgdk::Load(ppData);
-	juls::JuliaWrapper::Init();
+	jules::JuliaWrapper::Init();
 //	sampnode::callback::init();
 //	sampnode::nodeImpl.Initialize(mainConfigData);
 
     std::cout << "Pre-load-resource" << std::endl;
-	juls::JuliaWrapper::LoadResource(juls::JulsResource{ "res/testgm.jl" });
+	jules::JuliaWrapper::LoadResource(jules::JulsResource{"res/testgm.jl" });
 //	sampnode::NodeImpl::LoadAllResources(mainConfigData.resources, mainConfigData.enable_resources);
 
 	return true;
@@ -86,7 +86,7 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 {
 	sampgdk::Unload();
 //	sampnode::nodeImpl.Stop();
-	juls::JuliaWrapper::Dispose();
+	jules::JuliaWrapper::Dispose();
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx)

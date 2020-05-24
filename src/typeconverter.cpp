@@ -5,7 +5,7 @@
 #include <vector>
 #include "typeconverter.hpp"
 
-namespace juls {
+namespace jules {
     template<typename T>
     std::vector<T> TypeConverter::fromAmxArray_internal(AMX *amx, const cell &address_cell, const cell &size_cell,
                                                         std::function<T(const cell &)> mapper) {

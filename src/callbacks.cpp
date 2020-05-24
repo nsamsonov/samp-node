@@ -14,7 +14,7 @@
 #include "amxhandler.hpp"
 #include "sampgdk.h"
 
-namespace juls {
+namespace jules {
     const std::unordered_map<std::string, Event::Signature> Event::sampCallbacks = eventMapFromList({
         { "OnGameModeInit", ""},
         { "OnGameModeExit", "", },

@@ -13,7 +13,7 @@
 #include "amx/amx.h"
 #include "logger.hpp"
 
-namespace juls {
+namespace jules {
     class Argument {
     public:
         enum Type {

@@ -29,7 +29,7 @@ namespace sampnode
 	extern bool js_calling_public;
 }
 
-namespace juls {
+namespace jules {
     class Event {
     public:
         struct Signature {

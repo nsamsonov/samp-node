@@ -10,7 +10,7 @@
 #include "typeconverter.hpp"
 #include "callbacks.hpp"
 
-namespace juls {
+namespace jules {
     JuliaWrapper JuliaWrapper::juliaWrapper {};
 
     void JuliaWrapper::Init() {
@@ -23,6 +23,7 @@ namespace juls {
     void JuliaWrapper::LoadResource(const JulsResource &resource) {
         std::cout << "Loading " << resource.path << std::endl;
         juliaWrapper.gamemodeModule = reinterpret_cast<jl_module_t *>(jl_eval_string("include(\"res/testgm.jl\")"));
+        AssertNoException();
     }
 
     void JuliaWrapper::LoadResources(const std::vector<JulsResource> &resources) {
@@ -67,7 +68,7 @@ namespace juls {
                     break;
                 }
                 case Argument::kUint: {
-                    auto value = TypeConverter::fromAmx<uint32_t>(*param);
+                    auto value = TypeConverter::fromAmx<int32_t>(*param); // TODO: watch for uint32
                     args[i] = TypeConverter::toJulia(value);
                     break;
                 }
@@ -91,6 +92,8 @@ namespace juls {
         }
         std::cout << "Calling... ";
         jl_value_t *resultValue = jl_call(callback, args, event.argumentTypes.size());
+        AssertNoException();
+
         if (retval != nullptr) {
             auto result = jl_unbox_int32(resultValue);
             std::cout << "Result is " << result << " ";
@@ -103,5 +106,14 @@ namespace juls {
 
     void JuliaWrapper::Dispose() {
         jl_atexit_hook(0);
+    }
+
+    void JuliaWrapper::AssertNoException() {
+        if (jl_exception_occurred()) {
+            jl_call2(jl_get_function(jl_base_module, "showerror"),
+                     jl_stderr_obj(),
+                     jl_exception_occurred());
+            jl_printf(jl_stderr_stream(), "\n");
+        }
     }
 }

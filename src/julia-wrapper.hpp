@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 #include "amx/amx.h"
-#include "julia.h"
+#include <julia.h>
 
-namespace juls {
+namespace jules {
 
     struct JulsResource {
         const std::string path;
@@ -26,7 +26,9 @@ namespace juls {
         static bool HandlePublicCall(AMX* amx, const std::string &name, const cell* params, cell* retval);
 
     private:
-        jl_module_t *gamemodeModule;
+        jl_module_t *gamemodeModule = nullptr;
         static JuliaWrapper juliaWrapper;
+
+        static void AssertNoException();
     };
 }
