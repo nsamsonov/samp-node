@@ -20,7 +20,7 @@ const AMX_NATIVE_INFO native_list[] =
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX* amx, const char* name, cell* params, cell* retval)
 {
-    std::cout << "ON PUB CALL " << name << std::endl;
+//    std::cout << "ON PUB CALL " << name << std::endl;
     return jules::JuliaWrapper::HandlePublicCall(amx, std::string(name), params, retval);
 //	if (sampnode::js_calling_public)
 //		return true;

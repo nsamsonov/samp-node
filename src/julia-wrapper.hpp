@@ -29,6 +29,6 @@ namespace jules {
         jl_module_t *gamemodeModule = nullptr;
         static JuliaWrapper juliaWrapper;
 
-        static void AssertNoException();
+        static bool AssertNoException();
     };
 }

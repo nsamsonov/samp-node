@@ -33,7 +33,7 @@ namespace jules {
     }
 
     bool JuliaWrapper::HandlePublicCall(AMX* amx, const std::string &name, const cell* params, cell* retval) {
-        std::cout << "Received a call for " << name << std::endl;
+//        std::cout << "Received a call for " << name << std::endl;
 
         // Change to registered callbacks
         const auto eventIter = Event::sampCallbacks.find(name);
@@ -43,7 +43,7 @@ namespace jules {
         }
         jl_function_t* callback = jl_get_function(juliaWrapper.gamemodeModule, name.c_str());
         if (callback == nullptr) {
-            std::cout << "Julia impl not found" << std::endl;
+//            std::cout << "Julia impl not found" << std::endl;
             return false;
         }
         // TODO: check if callback exists
@@ -90,16 +90,15 @@ namespace jules {
                 }
             }
         }
-        std::cout << "Calling... ";
+//        std::cout << "Calling... ";
         jl_value_t *resultValue = jl_call(callback, args, event.argumentTypes.size());
-        AssertNoException();
 
-        if (retval != nullptr) {
+        if (AssertNoException() && retval != nullptr) {
             auto result = jl_unbox_int32(resultValue);
-            std::cout << "Result is " << result << " ";
+//            std::cout << "Result is " << result << " ";
             *retval = static_cast<cell>(result);
         }
-        std::cout << "Done" << std::endl;
+//        std::cout << "Done" << std::endl;
         JL_GC_POP();
         return true;
     }
@@ -108,12 +107,14 @@ namespace jules {
         jl_atexit_hook(0);
     }
 
-    void JuliaWrapper::AssertNoException() {
+    bool JuliaWrapper::AssertNoException() {
         if (jl_exception_occurred()) {
             jl_call2(jl_get_function(jl_base_module, "showerror"),
                      jl_stderr_obj(),
                      jl_exception_occurred());
             jl_printf(jl_stderr_stream(), "\n");
+            return false;
         }
+        return true;
     }
 }
