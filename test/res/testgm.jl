@@ -1,6 +1,9 @@
 module TestGamemode
 
+
+include("include/hook.jl")
 include("include/natives.jl")
+include("include/commands.jl")
 
 # println("Print global gm")
 
@@ -14,11 +17,11 @@ function OnGameModeInit()
     log("Vehicle pos $(GetVehiclePos(id))")
 end
 
-function OnIncomingConnection(playerid::Int32, ip_address::String, port::Int32)
+function OnIncomingConnection(playerid::Integer, ip_address::String, port::Integer)
     println("Incoming connection pid: $playerid ip: $ip_address:$port")
 end
 
-function OnPlayerConnect(playerid::Int32)
+function OnPlayerConnect(playerid::Integer)
     playerName = GetPlayerName(playerid)
     log("On player connect pid: $playerName[$playerid]")
     log(ccall(
@@ -29,13 +32,13 @@ function OnPlayerConnect(playerid::Int32)
     ))
 end
 
-function OnPlayerRequestClass(playerid::Int32, class::Int32)
+function OnPlayerRequestClass(playerid::Integer, class::Integer)
     log("On player request class pid: $playerid class $class")
     r = GetPlayerPos(playerid)
     log("Get player pos $r")
 end
 
-function OnPlayerCommandText(playerid::Int32, command::String)
+function OnPlayerCommandText(playerid::Integer, command::String)
     args = split(command, " ")[2:end]
     if (startswith(command, "/veh"))
         vid, = args
@@ -54,6 +57,11 @@ function OnPlayerCommandText(playerid::Int32, command::String)
         return 1
     end
     return 0
+end
+
+
+@jcmd function setHp(playerid::PlayerId, targetid::PlayerId, hp::Number)
+    SetPlayerHealth(targetid, hp)
 end
 
 function OnPlayerUpdate(playerid::Int32)
