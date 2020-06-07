@@ -1,70 +1,106 @@
 
 include("hook.jl")
+include("natives.jl")
 
 primitive type PlayerId <: Signed 32 end
 PlayerId(x :: Int32) = reinterpret(PlayerId, x)
 Int32(pid :: PlayerId) = reinterpret(Int32, pid)
 Base.show(io :: IO, pid :: PlayerId) = print(io, "PlayerId($(Int32(pid)))")
 
-# macro jcmd(x)
-#    show(x)
-# end
+__jcmds__ = Dict{String, Function}()
 
+@hook OnPlayerCommandText function(playerid::Integer, commandString::String)
+   cmd, argsstr = strtok(commandString)
+   f = get(__jcmds__, cmd, nothing)
+   if (f !== nothing)
+      f(PlayerId(playerid), argsstr)
+      return RETURN_TRUE
+   end
+end
 
 macro jcmd(x::Expr)
-   # show(__module__.OnPlayerCommandText)
    @assert x.head == :function "@jcmd can only be applied to a function"
    signature, body = x.args
    name, args = signature.args[1], signature.args[2:end]
-   cmd = string(name)
-   signature.args[1] = Symbol("cmd")
-
-   println(typeof(args))
-   for arg in args
+   cmd = "/" * string(name)
+   signature.args[1] = :__cmd
+   exprs = Vector{Expr}()
+   for arg in args[2:end]
       name, type = arg.args
-      # println(arg)
-      println("argument $name with type $type")
+      argsym = Symbol(name)
+      typesym = Symbol(type)
+      push!(exprs, quote
+         $argsym, view = strtok(view, $typesym)
+         push!(args, $argsym)
+      end)
    end
-   println()
-   show(Meta.show_sexpr(x))
-   println()
-   show(typeof(x))
 
-   q = quote
-      local $x
-      local function wrapper(playerid::Integer, argstr::String)
+   return quote
+      begin
+         local $x
+         local function wrapper(playerid::PlayerId, view::AbstractString)
+            args = []
+            $(exprs...)
+            __cmd(playerid, args...)
+         end
+         __jcmds__[$cmd] = wrapper
       end
-      println("EVALED")
    end
-   return :(eval($q))
    # ... remainder of macro, returning an expression
 end
 
-
-@jcmd function setHp(playerid::PlayerId, target::PlayerId, hp::Number)
-   println("calling setHp")
-    # SetPlayerHealth(playerid, hp)
-end
-
-function strtok(stringView::SubString, type::Type{String})::Tuple{String, SubString}
-   return string(stringView), stringView
+function strtok(stringView::AbstractString, type::Type{String})::Tuple{String, AbstractString}
+   return string(stringView), SubString("")
 
 end
 
-function strtok(stringView::SubString, type::Type{Integer})::Tuple{String, Integer}
-   print("Int")
-   return stringView, 1
+function strtok(stringView::AbstractString, type::Type{Integer})::Tuple{Integer, AbstractString}
+   token, nextview = strtok(stringView)
+   number = tryparse(Int, token)
+   return number, nextview
 end
 
-function strtok(stringView::SubString, type::Type{PlayerId})::Tuple{String, PlayerId}
-   print("playerid")
-   return stringView, Int(32)
+function strtok(stringView::AbstractString, type::Type{Float32})::Tuple{Float32, AbstractString}
+   token, nextview = strtok(stringView)
+   number = tryparse(Float32, token)
+   return number, nextview
 end
 
-# module gm
-#    include Main.cmds
-#    Main.cmds.@jcmd
-#    function setHp(playerid: PlayerId, hp: Number)
-#       SetPlayerHealth(playerid,  hp)
-#    end
-# end
+function strtok(stringView::AbstractString, type::Type{Number})::Tuple{Number, AbstractString}
+   return strtok(stringView, Float32)
+end
+
+function strtok(stringView::AbstractString, type::Type{PlayerId})::Tuple{PlayerId, AbstractString}
+   token, nextview = strtok(stringView)
+   playerid = tryparse(Int32, token)
+   if (playerid === nothing)
+      playerid = findplayer(token)
+   end
+   return playerid, nextview
+end
+
+function strtok(stringView::AbstractString)::Tuple{AbstractString, AbstractString}
+   index = findfirst(' ', stringView)
+   if (index === nothing)
+      return stringView, ""
+   end
+   return SubString(stringView, 1, index - 1), SubString(stringView, index + 1)
+end
+
+function findplayer(name::AbstractString)
+   for pid = 1:500
+      if (startswith(GetPlayerName(pid), name))
+         return pid
+      end
+   end
+   return nothing
+end
+
+
+@jcmd function jcmdtest(playerid::PlayerId, target::PlayerId, hp::Float32, test::String)
+   println("inside jcmdtest $(playerid) $(target) $(hp) $(test)")
+end
+
+@jcmd function jcmdtestint(playerid::PlayerId, num::Integer)
+   println("inside jcmdtestint $(playerid) $(num)")
+end

@@ -1,13 +1,12 @@
 module TestGamemode
 
-
 include("include/hook.jl")
 include("include/natives.jl")
 include("include/commands.jl")
 
 # println("Print global gm")
 
-function OnGameModeInit()
+@hookable function OnGameModeInit()
     # global test = x -> 2*x
     println("Game mode init!")
     SetGameModeText("TEST NATIVE")
@@ -15,13 +14,14 @@ function OnGameModeInit()
     id = CreateVehicle(411, Vector3(11, 11, 15), 55.0, 16, 14, -1, true)
 
     log("Vehicle pos $(GetVehiclePos(id))")
+    return 1
 end
 
-function OnIncomingConnection(playerid::Integer, ip_address::String, port::Integer)
+@hookable function OnIncomingConnection(playerid::Integer, ip_address::String, port::Integer)
     println("Incoming connection pid: $playerid ip: $ip_address:$port")
 end
 
-function OnPlayerConnect(playerid::Integer)
+@hookable function OnPlayerConnect(playerid::Integer)
     playerName = GetPlayerName(playerid)
     log("On player connect pid: $playerName[$playerid]")
     log(ccall(
@@ -32,13 +32,13 @@ function OnPlayerConnect(playerid::Integer)
     ))
 end
 
-function OnPlayerRequestClass(playerid::Integer, class::Integer)
+@hookable function OnPlayerRequestClass(playerid::Integer, class::Integer)
     log("On player request class pid: $playerid class $class")
     r = GetPlayerPos(playerid)
     log("Get player pos $r")
 end
 
-function OnPlayerCommandText(playerid::Integer, command::String)
+@hookable function OnPlayerCommandText(playerid::Integer, command::String)
     args = split(command, " ")[2:end]
     if (startswith(command, "/veh"))
         vid, = args
@@ -60,15 +60,15 @@ function OnPlayerCommandText(playerid::Integer, command::String)
 end
 
 
-@jcmd function setHp(playerid::PlayerId, targetid::PlayerId, hp::Number)
-    SetPlayerHealth(targetid, hp)
+@jcmd function setHp(playerid::PlayerId, target::PlayerId, hp::Number)
+    SetPlayerHealth(target, hp)
 end
 
-function OnPlayerUpdate(playerid::Int32)
+@hookable function OnPlayerUpdate(playerid::Int32)
     return 1
 end
 
-function OnRconCommand(command)
+@hookable function OnRconCommand(command)
     log(command)
 end
 
