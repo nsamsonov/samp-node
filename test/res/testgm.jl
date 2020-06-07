@@ -1,4 +1,4 @@
-module TestGamemode
+module testgm
 
 include("include/hook.jl")
 include("include/natives.jl")
@@ -77,5 +77,9 @@ function log(args...)
     println(args...)
     SendClientMessageToAll(-1, string(args...))
 end
+
+
+using Mmap
+println(mmap)
 
 end
