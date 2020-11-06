@@ -1,0 +1,4 @@
+name = "Hooks"
+uuid = "1555bf03-f3f8-4c2c-88b0-6ebf89a21ed3"
+authors = ["Nikita Samsonau <nsamsonau@gmail.com>"]
+version = "0.1.0"

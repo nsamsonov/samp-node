@@ -14,7 +14,6 @@ namespace jules {
     JuliaWrapper JuliaWrapper::juliaWrapper {};
 
     void JuliaWrapper::Init() {
-        std::cout << "TESST3" << std::endl;
         dlopen("libjulia.so", RTLD_NOW | RTLD_GLOBAL);
         jl_init();
         jl_eval_string("println(\"Hello from Julia!\")");

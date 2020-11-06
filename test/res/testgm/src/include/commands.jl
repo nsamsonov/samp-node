@@ -1,6 +1,9 @@
 
-include("hook.jl")
 include("natives.jl")
+module Commands
+using ..Natives
+
+include("hook.jl")
 
 primitive type PlayerId <: Signed 32 end
 PlayerId(x :: Int32) = reinterpret(PlayerId, x)
@@ -46,7 +49,6 @@ macro jcmd(x::Expr)
          __jcmds__[$cmd] = wrapper
       end
    end
-   # ... remainder of macro, returning an expression
 end
 
 function strtok(stringView::AbstractString, type::Type{String})::Tuple{String, AbstractString}
@@ -103,4 +105,5 @@ end
 
 @jcmd function jcmdtestint(playerid::PlayerId, num::Integer)
    println("inside jcmdtestint $(playerid) $(num)")
+end
 end

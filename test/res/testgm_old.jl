@@ -1,12 +1,10 @@
 module testgm
 
-include("include/hook.jl")
 include("include/natives.jl")
-include("include/commands.jl")
 
 # println("Print global gm")
 
-@hookable function OnGameModeInit()
+function OnGameModeInit()
     # global test = x -> 2*x
     println("Game mode init!")
     SetGameModeText("TEST NATIVE")
@@ -17,28 +15,22 @@ include("include/commands.jl")
     return 1
 end
 
-@hookable function OnIncomingConnection(playerid::Integer, ip_address::String, port::Integer)
+function OnIncomingConnection(playerid::Integer, ip_address::String, port::Integer)
     println("Incoming connection pid: $playerid ip: $ip_address:$port")
 end
 
-@hookable function OnPlayerConnect(playerid::Integer)
+function OnPlayerConnect(playerid::Integer)
     playerName = GetPlayerName(playerid)
     log("On player connect pid: $playerName[$playerid]")
-    log(ccall(
-        (:sampgdk_IsPlayerConnected, "./plugins/jules-andreas.so"),
-        UInt8,
-        (Cuint,),
-        playerid,
-    ))
 end
 
-@hookable function OnPlayerRequestClass(playerid::Integer, class::Integer)
+function OnPlayerRequestClass(playerid::Integer, class::Integer)
     log("On player request class pid: $playerid class $class")
     r = GetPlayerPos(playerid)
     log("Get player pos $r")
 end
 
-@hookable function OnPlayerCommandText(playerid::Integer, command::String)
+function OnPlayerCommandText(playerid::Integer, command::String)
     args = split(command, " ")[2:end]
     if (startswith(command, "/veh"))
         vid, = args
@@ -60,15 +52,11 @@ end
 end
 
 
-@jcmd function setHp(playerid::PlayerId, target::PlayerId, hp::Number)
-    SetPlayerHealth(target, hp)
-end
-
-@hookable function OnPlayerUpdate(playerid::Int32)
+function OnPlayerUpdate(playerid::Int32)
     return 1
 end
 
-@hookable function OnRconCommand(command)
+function OnRconCommand(command)
     log(command)
 end
 
@@ -77,9 +65,5 @@ function log(args...)
     println(args...)
     SendClientMessageToAll(-1, string(args...))
 end
-
-
-using Mmap
-println(mmap)
 
 end

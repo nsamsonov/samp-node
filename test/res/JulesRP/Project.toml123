@@ -1,0 +1,10 @@
+name = "JulesRP"
+uuid = "c648597f-6dd8-4a08-b3be-45eb00f239a9"
+authors = ["Nikita Samsonau <nsamsonau@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Commands = "a67d492c-70f8-44c8-b97e-052d0c86a473"
+Hooks = "1555bf03-f3f8-4c2c-88b0-6ebf89a21ed3"
+Natives = "405c6ace-87b1-4720-9e61-4327708ce3b9"
+TestPkg = "2e92a322-83b1-46d8-a84b-76594cc4e072"
